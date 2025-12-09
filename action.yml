@@ -151,11 +151,17 @@ runs:
         $binaryName = "sedstart.exe"
         $targetDir = Join-Path $Env:USERPROFILE ".sedstart"
         New-Item -ItemType Directory -Force -Path $targetDir | Out-Null
-        $downloadUrl = "http://cli.sedstart.com/latest/$cliDir/$binaryName"
+
+        switch ("${{ inputs.environment }}") {
+          "QA" { $downloadBase = "http://cli.sedinqa.com/latest" }
+          default { $downloadBase = "http://cli.sedstart.com/latest" }
+        }
+
+        $downloadUrl = "$downloadBase/$cliDir/$binaryName"
         Write-Host "Downloading $downloadUrl"
         Invoke-WebRequest -Uri $downloadUrl -OutFile (Join-Path $targetDir $binaryName) -UseBasicParsing
 
-        # decide URL for environment
+        # API base URL for config
         switch ("${{ inputs.environment }}") {
           "QA" { $sedUrl = "https://sedstart.sedinqa.com/api" }
           default { $sedUrl = "https://app.sedstart.com/api" }
