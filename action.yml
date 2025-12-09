@@ -172,14 +172,6 @@ runs:
         Add-Content -Path $Env:GITHUB_PATH -Value $targetDir
         Write-Host "sedstart installed to $targetDir; config at $configPath"
 
-    - name: (Linux) ensure Xvfb if headed
-      if: ${{ runner.os == 'Linux' && inputs.headless == 'false' }}
-      shell: bash
-      run: |
-        sudo apt-get update -y
-        sudo apt-get install -y xvfb
-        echo "Xvfb installed"
-
     - name: Run sedstart (Linux/macOS)
       if: ${{ runner.os != 'Windows' }}
       shell: bash
