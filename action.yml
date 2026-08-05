@@ -118,7 +118,7 @@ runs:
         # decide URL based on environment input
         ENVIRONMENT="${{ inputs.environment }}"
         case "$ENVIRONMENT" in
-          QA)   SEDSTART_URL="https://sedstart.sedinqa.com/api" ;;
+          QA)   SEDSTART_URL="https://test.app.sedstart.sedinqa.com/api" ;;
           PROD|"") SEDSTART_URL="https://app.sedstart.com/api" ;;
           *)    echo "Unknown environment '$ENVIRONMENT', defaulting to PROD"; SEDSTART_URL="https://app.sedstart.com/api" ;;
         esac
@@ -162,7 +162,7 @@ runs:
 
         # API base
         switch ("${{ inputs.environment }}") {
-          "QA" { $sedUrl = "https://sedstart.sedinqa.com/api" }
+          "QA" { $sedUrl = "https://test.app.sedstart.sedinqa.com/api" }
           default { $sedUrl = "https://app.sedstart.com/api" }
         }
 
