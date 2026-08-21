@@ -238,7 +238,7 @@ runs:
       env:
         SEDSTART_API_KEY: ${{ inputs.api_key }}
       run: |
-        if (${int('${{ inputs.project_id }}')} -eq 0) { Write-Error "project_id is required to be non-zero."; exit 1 }
+        if ([int]${{ inputs.project_id }} -eq 0) { Write-Error "project_id is required to be non-zero."; exit 1 }
         if ([int]${{ inputs.test_id }} -gt 0 -and [int]${{ inputs.suite_id }} -gt 0) { Write-Error "Both test_id and suite_id are set. Provide only one."; exit 1 }
         if ([int]${{ inputs.test_id }} -eq 0 -and [int]${{ inputs.suite_id }} -eq 0) { Write-Error "Neither test_id nor suite_id are set. Provide one."; exit 1 }
 
@@ -246,14 +246,19 @@ runs:
         $exe = Join-Path $installDir "sedstart.exe"
         Write-Host "Running sedstart"
 
-        $profileArg = ""
+        $configDir = Join-Path $Env:USERPROFILE ".sedstart"
+        Set-Location $configDir
+        $profileArgs = @()
         if ('${{ inputs.profile_id }}' -ne '0') {
-          $profileArg = "-d $env:SEDSTART_PROFILE_ID"
+          $profileArgs = "-d", $env:SEDSTART_PROFILE_ID
         }
 
         if ([int]${{ inputs.test_id }} -gt 0) {
-          & $exe run -b $env:SEDSTART_BROWSER -p $env:SEDSTART_PROJECT_ID $profileArg -t $env:SEDSTART_TEST_ID -e default.env
+          & $exe run -b $env:SEDSTART_BROWSER -p $env:SEDSTART_PROJECT_ID @profileArgs -t $env:SEDSTART_TEST_ID -e default.env
         } else {
-          & $exe run -b $env:SEDSTART_BROWSER -p $env:SEDSTART_PROJECT_ID $profileArg -s $env:SEDSTART_SUITE_ID -e default.env
+          & $exe run -b $env:SEDSTART_BROWSER -p $env:SEDSTART_PROJECT_ID @profileArgs -s $env:SEDSTART_SUITE_ID -e default.env
+        }
+        if ($LASTEXITCODE -ne 0) {
+          exit $LASTEXITCODE
         }
 
